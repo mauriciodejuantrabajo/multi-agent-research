@@ -13,6 +13,7 @@ al final, el informe en Markdown con su bibliografía.
 from __future__ import annotations
 
 import argparse
+import sys
 
 from dotenv import load_dotenv
 from rich.console import Console
@@ -21,6 +22,13 @@ from rich.panel import Panel
 
 from .llm import LLMError, get_client
 from .pipeline import Event, ResearchPipeline
+
+# En Windows la consola suele usar cp1252 y rompe con los emojis de la traza.
+# Forzamos UTF-8 en la salida para que el CLI funcione en cualquier terminal.
+for _stream in (sys.stdout, sys.stderr):
+    reconfigure = getattr(_stream, "reconfigure", None)
+    if reconfigure is not None:
+        reconfigure(encoding="utf-8", errors="replace")
 
 console = Console()
 

@@ -88,6 +88,7 @@ Reglas:
 - Entre 3 y 5 sub-preguntas, cada una específica y autosuficiente.
 - Cubrí los distintos ángulos del tema (qué, cómo, por qué, ejemplos, críticas).
 - No respondas la pregunta: solo descomponéla.
+- Escribí las sub-preguntas en el MISMO idioma que la pregunta del usuario.
 
 Respondé SOLO con un objeto JSON, sin texto alrededor, con esta forma exacta:
 {"topic": "<reformulación breve del tema>", "subquestions": ["...", "..."]}
