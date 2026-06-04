@@ -31,10 +31,10 @@ class RoleAwareLLM:
 
     def chat(self, messages, tools=None):
         system = messages[0]["content"]
-        if system.startswith("Sos el PLANIFICADOR"):
+        if "PLANIFICADOR" in system:
             return {"role": "assistant", "content": '{"topic": "T", "subquestions": ["sq1", "sq2"]}'}
 
-        if system.startswith("Sos el INVESTIGADOR"):
+        if "INVESTIGADOR" in system:
             # Primera vez: pide una búsqueda. Segunda: concluye.
             self.researcher_calls += 1
             if self.researcher_calls % 2 == 1:
@@ -46,7 +46,7 @@ class RoleAwareLLM:
                 }
             return {"role": "assistant", "content": "- hallazgo concreto [0]."}
 
-        if system.startswith("Sos el CRÍTICO"):
+        if "CRÍTICO" in system:
             self.critic_calls += 1
             if self.critic_approves or self.critic_calls > 1:
                 return {"role": "assistant", "content": '{"approved": true, "issues": [], "followups": []}'}
@@ -55,7 +55,7 @@ class RoleAwareLLM:
                 "content": '{"approved": false, "issues": ["falta algo"], "followups": ["sq3"]}',
             }
 
-        if system.startswith("Sos el REDACTOR"):
+        if "REDACTOR" in system:
             return {"role": "assistant", "content": "# Informe\n\nResultado final [1]."}
 
         return {"role": "assistant", "content": ""}

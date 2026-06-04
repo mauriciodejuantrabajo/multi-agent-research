@@ -1,6 +1,6 @@
 # 🧠 Multi-Agent Research
 
-Hacé una pregunta y un **equipo de cuatro agentes** investiga por vos: uno
+Haz una pregunta y un **equipo de cuatro agentes** investiga por ti: uno
 **planifica**, otro **investiga en la web**, otro **se autocritica** y un último
 **redacta** un informe en Markdown **con citas verificables a las fuentes**.
 
@@ -64,9 +64,9 @@ se anexa automáticamente al final (cada afirmación queda **verificable**).
 - 👥 **Cuatro roles especializados** con prompts independientes (separación de responsabilidades).
 - 🔁 **Loop de realimentación Critic → Researcher**: profundiza si falta algo, con tope de rondas.
 - 📚 **Informe con citas** verificables `[N]` + bibliografía global automática.
-- 🖥️ **Interfaz web** (Streamlit): ves en vivo qué agente trabaja y en qué; descargás el `.md`.
+- 🖥️ **Interfaz web** (Streamlit): muestra en vivo qué agente trabaja y en qué; descarga el `.md`.
 - 💻 **CLI** (rich) con traza en vivo y opción de guardar el informe en un archivo.
-- 🧪 **Tests sin red**: el CI no consume tu cuota de API.
+- 🧪 **Tests sin red**: el CI no consume la cuota de API.
 
 ## Arquitectura
 
@@ -107,7 +107,7 @@ pregunta
 ## Instalación
 
 ```bash
-# 1. Clonar el repo
+# 1. Clonar el repositorio
 git clone https://github.com/mauriciodejuantrabajo/multi-agent-research.git
 cd multi-agent-research
 
@@ -124,13 +124,13 @@ pip install -r requirements.txt
 
 ## Configuración
 
-Copiá la plantilla de variables de entorno y completá tu API key:
+Copia la plantilla de variables de entorno y completa tu API key:
 
 ```bash
 cp .env.example .env       # en Windows: copy .env.example .env
 ```
 
-Editá `.env` y poné tu key de DeepSeek:
+Edita `.env` y coloca tu key de DeepSeek:
 
 ```env
 DEEPSEEK_API_KEY=sk-tu-key-real-aca
@@ -138,9 +138,9 @@ DEEPSEEK_MODEL=deepseek-v4-flash
 DEEPSEEK_BASE_URL=https://api.deepseek.com
 ```
 
-> 🔒 **El archivo `.env` está en `.gitignore` y nunca se sube al repo.** Tu API key
-> queda solo en tu máquina. El archivo versionado es `.env.example`, que solo
-> contiene un placeholder (`sk-...`).
+> 🔒 **El archivo `.env` está en `.gitignore` y nunca se sube al repositorio.** Tu
+> API key queda solo en tu máquina. El archivo versionado es `.env.example`, que
+> solo contiene un placeholder (`sk-...`).
 
 ## Uso
 
@@ -150,21 +150,21 @@ DEEPSEEK_BASE_URL=https://api.deepseek.com
 streamlit run app.py
 ```
 
-Se abre en `http://localhost:8501`. Escribí tu pregunta y mirá cómo el equipo
-trabaja paso a paso; al final obtenés el informe con sus fuentes y un botón para
-descargarlo. En el panel lateral podés ajustar las **rondas máximas** de
+Se abre en `http://localhost:8501`. Escribe tu pregunta y observa cómo el equipo
+trabaja paso a paso; al final obtienes el informe con sus fuentes y un botón para
+descargarlo. En el panel lateral puedes ajustar las **rondas máximas** de
 investigación.
 
 ### CLI
 
 ```bash
 python -m src.main "¿Qué es el Model Context Protocol y por qué importa?"
-python -m src.main                                  # modo interactivo
+python -m src.main                                    # modo interactivo
 python -m src.main "tema a investigar" -o informe.md  # guarda el informe
 ```
 
 Verás la traza en vivo de cada agente y, al final, el informe en Markdown con su
-bibliografía. `salir` para terminar el modo interactivo.
+bibliografía. Escribe `salir` para terminar el modo interactivo.
 
 ## El modelo
 
@@ -175,7 +175,7 @@ configurable en `.env` sin tocar código:
 DEEPSEEK_MODEL=deepseek-v4-flash
 ```
 
-Si tu cuenta tiene otro modelo, basta con poner su identificador exacto en
+Si tu cuenta tiene otro modelo, basta con colocar su identificador exacto en
 `DEEPSEEK_MODEL`.
 
 ## Tests
@@ -187,7 +187,7 @@ pytest
 Los tests reemplazan el LLM por uno falso (que responde según el rol de cada
 agente) y mockean las web tools: se cubre el flujo completo Planner→Researcher→
 Critic→Writer **y** el loop de realimentación del crítico. **No se hace ninguna
-llamada de red real**, así el CI es reproducible y no consume tu cuota de API.
+llamada de red real**, así el CI es reproducible y no consume la cuota de API.
 
 ## Licencia
 

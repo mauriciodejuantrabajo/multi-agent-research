@@ -81,16 +81,16 @@ def _parse_json_block(text: str) -> dict | list | None:
 # --------------------------------------------------------------------------- #
 
 PLANNER_PROMPT = """\
-Sos el PLANIFICADOR de un equipo de investigación. Tu trabajo es descomponer la
+Eres el PLANIFICADOR de un equipo de investigación. Tu trabajo es descomponer la
 pregunta del usuario en una lista de sub-preguntas concretas e investigables.
 
 Reglas:
 - Entre 3 y 5 sub-preguntas, cada una específica y autosuficiente.
-- Cubrí los distintos ángulos del tema (qué, cómo, por qué, ejemplos, críticas).
-- No respondas la pregunta: solo descomponéla.
-- Escribí las sub-preguntas en el MISMO idioma que la pregunta del usuario.
+- Cubre los distintos ángulos del tema (qué, cómo, por qué, ejemplos, críticas).
+- No respondas la pregunta: solo descompónla.
+- Escribe las sub-preguntas en el MISMO idioma que la pregunta del usuario.
 
-Respondé SOLO con un objeto JSON, sin texto alrededor, con esta forma exacta:
+Responde SOLO con un objeto JSON, sin texto alrededor, con esta forma exacta:
 {"topic": "<reformulación breve del tema>", "subquestions": ["...", "..."]}
 """
 
@@ -118,7 +118,7 @@ class Planner:
 # --------------------------------------------------------------------------- #
 
 RESEARCHER_PROMPT = """\
-Sos el INVESTIGADOR del equipo. Te dan UNA sub-pregunta y tenés que responderla
+Eres el INVESTIGADOR del equipo. Te dan UNA sub-pregunta y tienes que responderla
 investigando en la web.
 
 Herramientas:
@@ -126,13 +126,14 @@ Herramientas:
 - read_url(url): descarga una página y devuelve su texto.
 
 Cómo trabajar:
-- Buscá con web_search y leé con read_url al menos 1-2 páginas relevantes antes
+- Busca con web_search y lee con read_url al menos 1-2 páginas relevantes antes
   de concluir.
-- No inventes datos: afirmá solo lo que viste en una página que leíste.
-- Cuando leés una página, su contenido empieza con "[Fuente N]". Usá ese número
-  para citar: poné [N] justo después de cada afirmación tomada de esa fuente.
-- Al terminar, escribí en español tus hallazgos para esta sub-pregunta: viñetas
-  con datos concretos, cada uno con su cita [N]. Sé breve y factual.
+- No inventes datos: afirma solo lo que viste en una página que leíste.
+- Cuando lees una página, su contenido empieza con "[Fuente N]". Usa ese número
+  para citar: pon [N] justo después de cada afirmación tomada de esa fuente.
+- Al terminar, escribe tus hallazgos para esta sub-pregunta en el mismo idioma
+  que la pregunta: viñetas con datos concretos, cada uno con su cita [N]. Sé
+  breve y factual.
 - No agregues la lista de fuentes: el sistema la anexa al final del informe.
 """
 
@@ -200,18 +201,18 @@ class Researcher:
 # --------------------------------------------------------------------------- #
 
 CRITIC_PROMPT = """\
-Sos el CRÍTICO del equipo. Te dan la pregunta original y los hallazgos del
+Eres el CRÍTICO del equipo. Te dan la pregunta original y los hallazgos del
 investigador. Tu trabajo es controlar la CALIDAD antes de escribir el informe.
 
-Revisá:
+Revisa:
 - ¿Hay afirmaciones importantes SIN cita [N]?
 - ¿Quedan ángulos de la pregunta sin cubrir (huecos)?
 - ¿Hay contradicciones entre hallazgos?
 
 Sé exigente pero razonable: si los hallazgos alcanzan para un buen informe,
-APROBÁ. Solo pedí más investigación si falta algo realmente importante.
+APRUEBA. Solo pide más investigación si falta algo realmente importante.
 
-Respondé SOLO con un objeto JSON, sin texto alrededor:
+Responde SOLO con un objeto JSON, sin texto alrededor:
 {"approved": true|false, "issues": ["..."], "followups": ["nueva sub-pregunta", "..."]}
 - "issues": problemas detectados (vacío si está todo bien).
 - "followups": sub-preguntas extra a investigar (solo si approved=false).
@@ -248,8 +249,9 @@ class Critic:
 # --------------------------------------------------------------------------- #
 
 WRITER_PROMPT = """\
-Sos el REDACTOR del equipo. Te dan la pregunta original y los hallazgos ya
-validados por el crítico. Escribí un INFORME final en Markdown, en español.
+Eres el REDACTOR del equipo. Te dan la pregunta original y los hallazgos ya
+validados por el crítico. Escribe un INFORME final en Markdown, en el mismo
+idioma que la pregunta original.
 
 Estructura:
 - Un título con #.
@@ -258,8 +260,8 @@ Estructura:
 - Una conclusión.
 
 Reglas:
-- Usá SOLO la información de los hallazgos. No agregues datos nuevos.
-- Conservá las citas [N] exactamente donde corresponden a cada afirmación.
+- Usa SOLO la información de los hallazgos. No agregues datos nuevos.
+- Conserva las citas [N] exactamente donde corresponden a cada afirmación.
 - No inventes ni renumeres las citas.
 - No agregues la lista de fuentes al final: el sistema la anexa automáticamente.
 """

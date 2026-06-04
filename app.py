@@ -1,7 +1,7 @@
 """
 Interfaz web (Streamlit) del sistema multi-agente de investigación.
 
-Escribís una pregunta y ves, en vivo, cómo trabaja el equipo de agentes
+Escribes una pregunta y ves, en vivo, cómo trabaja el equipo de agentes
 (Planner → Researcher → Critic → Writer). Al final se muestra el informe en
 Markdown con su bibliografía y un botón para descargarlo.
 

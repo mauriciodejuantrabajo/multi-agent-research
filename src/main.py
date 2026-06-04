@@ -100,7 +100,7 @@ def main() -> None:
         "[bold]Multi-Agent Research[/bold]\n"
         "Un equipo de 4 agentes investiga tu pregunta: planifica, investiga en la "
         "web, se autocritica y redacta un informe con citas.\n"
-        "[dim]Escribí tu pregunta. 'salir' para terminar.[/dim]",
+        "[dim]Escribe tu pregunta. 'salir' para terminar.[/dim]",
         border_style="blue",
     ))
 

@@ -53,7 +53,7 @@ class DeepSeekClient:
         """
         if not self.api_key:
             raise LLMError(
-                "Falta DEEPSEEK_API_KEY. Copiá .env.example a .env y poné tu key "
+                "Falta DEEPSEEK_API_KEY. Copia .env.example a .env y coloca tu key "
                 "(https://platform.deepseek.com)."
             )
 
