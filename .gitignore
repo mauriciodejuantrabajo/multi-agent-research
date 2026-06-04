@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+.pytest_cache/
+
+# Informes generados localmente (salida del usuario, no se versiona)
+reports/
+*.report.md
