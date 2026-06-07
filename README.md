@@ -1,181 +1,182 @@
+> **Idioma / Language:** **English** · [Español](README.es.md)
+
 # 🧠 Multi-Agent Research
 
-Haz una pregunta y un **equipo de cuatro agentes** investiga por ti: uno
-**planifica**, otro **investiga en la web**, otro **se autocritica** y un último
-**redacta** un informe en Markdown **con citas verificables a las fuentes**.
+Ask a question and a **team of four agents** researches for you: one **plans**,
+one **researches the web**, one **self-critiques** and a last one **writes** a
+Markdown report **with verifiable citations to the sources**.
 
-Es el patrón clásico de sistemas multi-agente —**Planner → Researcher → Critic →
-Writer**— con un *loop de realimentación*: si el crítico detecta huecos, manda al
-investigador a profundizar antes de escribir. Usa **tool-calling nativo** de la
-API de **DeepSeek**.
+It's the classic multi-agent pattern —**Planner → Researcher → Critic →
+Writer**— with a *feedback loop*: if the critic detects gaps, it sends the
+researcher back to dig deeper before writing. It uses **native tool-calling**
+from the **DeepSeek** API.
 
-Funciona con **interfaz web** (Streamlit, progreso en vivo) o por **CLI**.
+It works with a **web interface** (Streamlit, live progress) or via **CLI**.
 
 ```
-?  ¿Qué es el Model Context Protocol y por qué importa?
+?  What is the Model Context Protocol and why does it matter?
 
-  🧭 Planner: Descomponiendo la pregunta…
-  🧭 Planner: Sub-pregunta — ¿Qué es el Model Context Protocol?
-  🧭 Planner: Sub-pregunta — ¿Qué problema resuelve y por qué importa?
-  🔎 Researcher: Investigando — ¿Qué es el Model Context Protocol?
-  🔎 Researcher: Investigando — ¿Qué problema resuelve y por qué importa?
-  🧐 Critic: Revisando los hallazgos…
-  🧐 Critic: Aprobado
-  ✍️ Writer: Redactando el informe final…
+  🧭 Planner: Breaking down the question…
+  🧭 Planner: Sub-question — What is the Model Context Protocol?
+  🧭 Planner: Sub-question — What problem does it solve and why does it matter?
+  🔎 Researcher: Researching — What is the Model Context Protocol?
+  🔎 Researcher: Researching — What problem does it solve and why does it matter?
+  🧐 Critic: Reviewing the findings…
+  🧐 Critic: Approved
+  ✍️ Writer: Drafting the final report…
 
-  # El Model Context Protocol (MCP)
-  El MCP es un protocolo abierto que estandariza cómo las aplicaciones proveen
-  contexto a los modelos de lenguaje [1]. …
+  # The Model Context Protocol (MCP)
+  MCP is an open protocol that standardizes how applications provide context to
+  language models [1]. …
 
-  Fuentes
+  Sources
   [1] Introduction - Model Context Protocol — modelcontextprotocol.io
   [2] Introducing the Model Context Protocol — anthropic.com
 ```
 
-## El problema
+## The problem
 
-Una investigación seria no es una sola llamada al modelo: hay que **descomponer**
-la pregunta, **buscar y leer** varias fuentes, **contrastar**, detectar **huecos**
-y recién entonces **redactar**. Pedírselo todo a un único prompt produce
-respuestas planas, sin estructura y con riesgo de alucinación.
+Serious research isn't a single model call: you have to **break down** the
+question, **search and read** several sources, **contrast**, detect **gaps** and
+only then **write**. Asking it all from a single prompt produces flat,
+unstructured answers with a risk of hallucination.
 
-## La solución
+## The solution
 
-**Dividir el trabajo en roles**, como un equipo humano. Cada agente tiene una
-única responsabilidad y su propio prompt, así "piensa" solo en su tarea:
+**Divide the work into roles**, like a human team. Each agent has a single
+responsibility and its own prompt, so it "thinks" only about its task:
 
-| Agente | Rol | Herramientas |
-|--------|-----|--------------|
-| 🧭 **Planner** | Descompone la pregunta en 3-5 sub-preguntas investigables | — |
-| 🔎 **Researcher** | Investiga cada sub-pregunta (busca y lee páginas) con citas [N] | `web_search`, `read_url` |
-| 🧐 **Critic** | Revisa calidad: huecos, afirmaciones sin fuente, contradicciones | — |
-| ✍️ **Writer** | Redacta el informe final en Markdown conservando las citas | — |
+| Agent | Role | Tools |
+|-------|------|-------|
+| 🧭 **Planner** | Breaks the question into 3-5 researchable sub-questions | — |
+| 🔎 **Researcher** | Researches each sub-question (searches and reads pages) with [N] citations | `web_search`, `read_url` |
+| 🧐 **Critic** | Reviews quality: gaps, unsourced claims, contradictions | — |
+| ✍️ **Writer** | Writes the final Markdown report preserving the citations | — |
 
-El **Critic** es la pieza clave: si no aprueba los hallazgos, devuelve
-**sub-preguntas de seguimiento** y el Researcher hace otra ronda (hasta un máximo
-configurable). Es realimentación, no un pipeline ciego.
+The **Critic** is the key piece: if it doesn't approve the findings, it returns
+**follow-up sub-questions** and the Researcher does another round (up to a
+configurable maximum). It's feedback, not a blind pipeline.
 
-Todos los investigadores comparten un único **registro de fuentes**, así las
-citas `[N]` son **globales y coherentes** en todo el informe, y la bibliografía
-se anexa automáticamente al final (cada afirmación queda **verificable**).
+All researchers share a single **source registry**, so the `[N]` citations are
+**global and consistent** across the whole report, and the bibliography is
+automatically appended at the end (every claim stays **verifiable**).
 
-## Características
+## Features
 
-- 👥 **Cuatro roles especializados** con prompts independientes (separación de responsabilidades).
-- 🔁 **Loop de realimentación Critic → Researcher**: profundiza si falta algo, con tope de rondas.
-- 📚 **Informe con citas** verificables `[N]` + bibliografía global automática.
-- 🖥️ **Interfaz web** (Streamlit): muestra en vivo qué agente trabaja y en qué; descarga el `.md`.
-- 💻 **CLI** (rich) con traza en vivo y opción de guardar el informe en un archivo.
-- 🧪 **Tests sin red**: el CI no consume la cuota de API.
+- 👥 **Four specialized roles** with independent prompts (separation of concerns).
+- 🔁 **Critic → Researcher feedback loop**: digs deeper if something is missing, with a round cap.
+- 📚 **Report with verifiable citations** `[N]` + automatic global bibliography.
+- 🖥️ **Web interface** (Streamlit): shows live which agent is working and on what; download the `.md`.
+- 💻 **CLI** (rich) with live trace and the option to save the report to a file.
+- 🧪 **Network-free tests**: the CI doesn't consume the API quota.
 
-## Arquitectura
+## Architecture
 
 ```
-app.py             Interfaz web (Streamlit): progreso en vivo + descarga del informe.
+app.py             Web interface (Streamlit): live progress + report download.
 src/
-├── llm.py         Cliente DeepSeek (API compatible OpenAI): tool-calling.
-├── tools.py       web_search + read_url + SourceRegistry (numera y deduplica citas).
-├── agents.py      Los 4 agentes: Planner, Researcher, Critic, Writer.
-├── pipeline.py    Orquestador: coordina los agentes y el loop de realimentación.
-└── main.py        CLI (rich) con traza en vivo y export a Markdown.
-tests/             Tests con mocks (sin red real ni llamadas a la API).
+├── llm.py         DeepSeek client (OpenAI-compatible API): tool-calling.
+├── tools.py       web_search + read_url + SourceRegistry (numbers and dedupes citations).
+├── agents.py      The 4 agents: Planner, Researcher, Critic, Writer.
+├── pipeline.py    Orchestrator: coordinates the agents and the feedback loop.
+└── main.py        CLI (rich) with live trace and Markdown export.
+tests/             Tests with mocks (no real network, no API calls).
 ```
 
-El **flujo** que coordina `pipeline.py`:
+The **flow** coordinated by `pipeline.py`:
 
 ```
-pregunta
+question
    │
    ▼
-🧭 Planner ──► [sub-preguntas]
+🧭 Planner ──► [sub-questions]
    │
    ▼
-🔎 Researcher ──► [hallazgos con citas]  ◄──┐
-   │                                        │ otra ronda
-   ▼                                        │ (sub-preguntas
-🧐 Critic ──► ¿aprueba? ── no ──────────────┘  de seguimiento)
-   │ sí
+🔎 Researcher ──► [findings with citations]  ◄──┐
+   │                                            │ another round
+   ▼                                            │ (follow-up
+🧐 Critic ──► approve? ── no ───────────────────┘  sub-questions)
+   │ yes
    ▼
-✍️ Writer ──► informe.md + bibliografía
+✍️ Writer ──► report.md + bibliography
 ```
 
-## Requisitos
+## Requirements
 
 - **Python 3.10+**
-- Una **API key de DeepSeek** → se obtiene en https://platform.deepseek.com
+- A **DeepSeek API key** → get it at https://platform.deepseek.com
 
-## Instalación
+## Installation
 
 ```bash
-# 1. Clonar el repositorio
+# 1. Clone the repository
 git clone https://github.com/mauriciodejuantrabajo/multi-agent-research.git
 cd multi-agent-research
 
-# 2. (Opcional) crear un entorno virtual
+# 2. (Optional) create a virtual environment
 python -m venv .venv
 # Windows:  .venv\Scripts\activate
 # Linux/Mac: source .venv/bin/activate
 
-# 3. Instalar dependencias
+# 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Configurar la API key (ver siguiente sección)
+# 4. Configure the API key (see next section)
 ```
 
-## Configuración
+## Configuration
 
-Copia la plantilla de variables de entorno y completa tu API key:
+Copy the environment variables template and fill in your API key:
 
 ```bash
-cp .env.example .env       # en Windows: copy .env.example .env
+cp .env.example .env       # on Windows: copy .env.example .env
 ```
 
-Edita `.env` y coloca tu key de DeepSeek:
+Edit `.env` and set your DeepSeek key:
 
 ```env
-DEEPSEEK_API_KEY=sk-tu-key-real-aca
+DEEPSEEK_API_KEY=sk-your-real-key-here
 DEEPSEEK_MODEL=deepseek-v4-flash
 DEEPSEEK_BASE_URL=https://api.deepseek.com
 ```
 
-> 🔒 **El archivo `.env` está en `.gitignore` y nunca se sube al repositorio.** Tu
-> API key queda solo en tu máquina. El archivo versionado es `.env.example`, que
-> solo contiene un placeholder (`sk-...`).
+> 🔒 **The `.env` file is in `.gitignore` and is never committed.** Your API key
+> stays only on your machine. The versioned file is `.env.example`, which only
+> contains a placeholder (`sk-...`).
 
-## Uso
+## Usage
 
-### Interfaz web (recomendada)
+### Web interface (recommended)
 
 ```bash
 streamlit run app.py
 ```
 
-Se abre en `http://localhost:8501`. Escribe tu pregunta y observa cómo el equipo
-trabaja paso a paso; al final obtienes el informe con sus fuentes y un botón para
-descargarlo. En el panel lateral puedes ajustar las **rondas máximas** de
-investigación.
+It opens at `http://localhost:8501`. Type your question and watch the team work
+step by step; at the end you get the report with its sources and a button to
+download it. In the side panel you can adjust the **maximum research rounds**.
 
 ### CLI
 
 ```bash
-python -m src.main "¿Qué es el Model Context Protocol y por qué importa?"
-python -m src.main                                    # modo interactivo
-python -m src.main "tema a investigar" -o informe.md  # guarda el informe
+python -m src.main "What is the Model Context Protocol and why does it matter?"
+python -m src.main                                    # interactive mode
+python -m src.main "topic to research" -o report.md   # saves the report
 ```
 
-Verás la traza en vivo de cada agente y, al final, el informe en Markdown con su
-bibliografía. Escribe `salir` para terminar el modo interactivo.
+You'll see the live trace of each agent and, at the end, the Markdown report with
+its bibliography. Type `salir` to exit interactive mode.
 
-## El modelo
+## The model
 
-Se usa la API de **DeepSeek** (formato compatible con OpenAI). El modelo es
-configurable en `.env` sin tocar código:
+It uses the **DeepSeek** API (OpenAI-compatible format). The model is configurable
+in `.env` without touching code:
 
 ```env
 DEEPSEEK_MODEL=deepseek-v4-flash
 ```
 
-Si tu cuenta tiene otro modelo, basta con colocar su identificador exacto en
+If your account has a different model, just put its exact identifier in
 `DEEPSEEK_MODEL`.
 
 ## Tests
@@ -184,11 +185,11 @@ Si tu cuenta tiene otro modelo, basta con colocar su identificador exacto en
 pytest
 ```
 
-Los tests reemplazan el LLM por uno falso (que responde según el rol de cada
-agente) y mockean las web tools: se cubre el flujo completo Planner→Researcher→
-Critic→Writer **y** el loop de realimentación del crítico. **No se hace ninguna
-llamada de red real**, así el CI es reproducible y no consume la cuota de API.
+The tests replace the LLM with a fake one (responding according to each agent's
+role) and mock the web tools: they cover the full Planner→Researcher→Critic→Writer
+flow **and** the critic's feedback loop. **No real network call is made**, so the
+CI is reproducible and doesn't consume the API quota.
 
-## Licencia
+## License
 
 [MIT](LICENSE) © Mauricio De Juan
